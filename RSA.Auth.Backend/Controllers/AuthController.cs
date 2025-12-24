@@ -4,6 +4,7 @@ using RsaAuth.Backend.Context;
 using RsaAuth.Backend.DTOs;
 using RsaAuth.Backend.Helpers;
 using RsaAuth.Backend.Models;
+using System.Text.Json;
 
 namespace RsaAuth.Backend.Controllers
 {
@@ -20,14 +21,34 @@ namespace RsaAuth.Backend.Controllers
         }
 
         [HttpPost("sign-up")]
-        public async Task<ActionResult> userSignUp(SignupDto dto)
+        public async Task<ActionResult> userSignUp(SignupBodyDto dto)
         {
+            var decryptedJson = EncDscRSA.Decrypt(dto.Data);
+            var obj = JsonDocument.Parse(decryptedJson);
+            var root = obj.RootElement;
+            //string fullName = ;
+            //string mobile = root.GetProperty("mobile").GetString();
+            //string email = root.GetProperty("email").GetString();
+
+
+            //Console.WriteLine($"FullName: {fullName}");
+            //Console.WriteLine($"Mobile: {mobile}");
+            //Console.WriteLine($"Email: {email}");
+
+            //if (decryptedJson.StartsWith("\""))
+            //{
+            //    decryptedJson = JsonSerializer.Deserialize<string>(decryptedJson);
+            //}
+            //var userInfo = JsonSerializer.Deserialize<SignupDto>(decryptedJson);
+
+            //Console.WriteLine(userInfo.FullName);
+
             var user = new User
             {
-                FullName = EncDscRSA.Decrypt(dto.FullName),
+                FullName = root.GetProperty("fullName").GetString(),
                 DateOfBirth = dto.DateOfBirth,
-                Mobile = EncDscRSA.Decrypt(dto.Mobile),
-                Email = EncDscRSA.Decrypt(dto.Email),
+                Mobile = root.GetProperty("mobile").GetString(),
+                Email = root.GetProperty("email").GetString(),
                 PasswordHash = dto.Password
             };
 
