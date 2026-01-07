@@ -70,7 +70,8 @@ namespace RsaAuth.Backend.Controllers
         {
             if (dto == null) return BadRequest();
 
-            var email = EncDscRSA.Decrypt(dto.Email);
+            var decryptedEmail = EncDscRSA.Decrypt(dto.Email);
+            var email = JsonSerializer.Deserialize<string>(decryptedEmail);
 
             var user = await _authContext.Users.FirstOrDefaultAsync(u => u.Email == email);
 
